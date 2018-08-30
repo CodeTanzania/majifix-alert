@@ -1,0 +1,28 @@
+{
+  "name": "majifix-alert",
+  "description": "An incident reporting service to notify citizens in case of service disruption such as lack of water, network maintenance etc.",
+  "repository": "https://github.com/CodeTanzania/majifix-alert.git",
+  "keywords": [
+    "codetanzania",
+    "majifix",
+    "majifix-module",
+    "alert",
+    "message",
+    "sms",
+    "email"
+  ],
+  "addons": [
+    "mongolab"
+  ],
+  "env":
+  {
+    "NPM_CONFIG_PRODUCTION":
+    {
+      "value": "false"
+    },
+    "YARN_PRODUCTION":
+    {
+      "value": "false"
+    }
+  }
+}

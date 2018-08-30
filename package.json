@@ -1,0 +1,80 @@
+{
+  "name": "@codetanzania/majifix-alert",
+  "version": "1.0.0",
+  "description": "An incident reporting service to notify citizens in case of service disruption such as lack of water, network maintenance etc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test",
+    "integration": "grunt integration"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CodeTanzania/majifix-alert.git"
+  },
+  "keywords": [
+    "codetanzania",
+    "majifix",
+    "majifix-module",
+    "alert",
+    "message",
+    "sms",
+    "email"
+  ],
+  "contributors": [
+    {
+      "name": "lykmapipo",
+      "email": "lallyelias87@gmail.com",
+      "url": "https://github.com/lykmapipo"
+    },
+    {
+      "name": "benMaruchu",
+      "email": "benmaruchu@gmail.com",
+      "url": "https://github.com/BenMaruchu"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CodeTanzania/majifix-alert/issues",
+    "email": "lallyelias87@gmail.com"
+  },
+  "homepage": "https://github.com/CodeTanzania/majifix-alert",
+  "sandbox": {
+    "url": "https://majifix-alert.herokuapp.com/v1/statuses"
+  },
+  "devDependencies": {
+    "@benmaruchu/faker": "^4.2.1",
+    "chai": "^4.1.2",
+    "grunt": "^1.0.3",
+    "grunt-apidoc": "^0.11.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-mocha-test": "^0.13.3",
+    "jshint-stylish": "^2.2.1",
+    "kue": "^0.11.6",
+    "mocha": "^5.2.0",
+    "mongoose": "^5.2.10",
+    "nodemon": "^1.18.4",
+    "sinon": "^6.1.5",
+    "sinon-chai": "^3.2.0",
+    "sinon-mongoose": "^2.2.1",
+    "superagent": "^3.8.3",
+    "supertest": "^3.1.0"
+  },
+  "dependencies": {
+    "@codetanzania/majifix-account": "^1.4.1",
+    "@codetanzania/majifix-common": "^0.9.0",
+    "@codetanzania/majifix-jurisdiction": "^1.4.0",
+    "@lykmapipo/express-common": "^0.9.1",
+    "@lykmapipo/postman": "^0.1.0",
+    "async": "^2.6.1",
+    "express": "^4.16.3",
+    "lodash": "^4.17.10",
+    "moment": "^2.22.2",
+    "mongoose-kue": "^0.6.0",
+    "mongoose-rest-actions": "^0.15.5"
+  },
+  "engines": {
+    "node": ">=8.11.1",
+    "npm": ">=5.6.0"
+  }
+}
