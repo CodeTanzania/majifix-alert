@@ -17,8 +17,10 @@
     "majifix-module",
     "alert",
     "message",
+    "notification",
     "sms",
-    "email"
+    "email",
+    "push"
   ],
   "contributors": [
     {
