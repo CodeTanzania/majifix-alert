@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/CodeTanzania/majifix-alert",
   "sandbox": {
-    "url": "https://majifix-alert.herokuapp.com/v1/statuses"
+    "url": "https://majifix-alert.herokuapp.com/v1/alerts"
   },
   "devDependencies": {
     "@benmaruchu/faker": "^4.2.1",
