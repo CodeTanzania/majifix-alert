@@ -55,8 +55,8 @@
     "jshint-stylish": "^2.2.1",
     "kue": "^0.11.6",
     "mocha": "^5.2.0",
-    "mongoose": "5.2.13",
-    "sinon": "^6.2.0",
+    "mongoose": "5.2.15",
+    "sinon": "^6.3.3",
     "sinon-chai": "^3.2.0",
     "sinon-mongoose": "^2.2.1",
     "superagent": "^3.8.3",
@@ -67,13 +67,13 @@
     "@codetanzania/majifix-common": "^0.9.1",
     "@codetanzania/majifix-jurisdiction": "^1.4.2",
     "@lykmapipo/express-common": "^0.9.1",
-    "@lykmapipo/postman": "^0.1.1",
+    "@lykmapipo/postman": "^0.5.0",
     "async": "^2.6.1",
     "express": "^4.16.3",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "mongoose-kue": "^0.7.0",
-    "mongoose-rest-actions": "^0.16.1"
+    "mongoose-rest-actions": "^0.17.0"
   },
   "engines": {
     "node": ">=8.11.1",
