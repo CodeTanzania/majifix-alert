@@ -66,7 +66,7 @@ exports.Alert = Alert;
 
 
 /* export alert router */
-exports.router = router;
+exports.router = exports.alertRouter = router;
 
 
 /* export router api version */
