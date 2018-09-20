@@ -26,7 +26,7 @@ describe('Alert', function () {
       expect(jurisdictions.type[0]).to.be.a('function');
       expect(jurisdictions.type[0].name).to.be.equal('ObjectId');
       expect(jurisdictions.index).to.be.true;
-      expect(jurisdictions.exists).to.be.true;
+      expect(jurisdictions.exists).to.be.an('object');
       expect(jurisdictions.autopopulate).to.exist;
 
     });
