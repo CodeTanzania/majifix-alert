@@ -1,6 +1,6 @@
 {
   "name": "@codetanzania/majifix-alert",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An incident reporting service to notify citizens in case of service disruption such as lack of water, network maintenance etc.",
   "main": "index.js",
   "scripts": {
