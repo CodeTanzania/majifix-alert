@@ -4,6 +4,7 @@
 const path = require('path');
 const request = require('supertest');
 const { expect } = require('chai');
+const { Jurisdiction } = require('@codetanzania/majifix-jurisdiction');
 const {
   Alert,
   apiVersion,
@@ -11,25 +12,40 @@ const {
 } = require(path.join(__dirname, '..', '..'));
 
 
-describe.skip('Alert', function () {
+describe('Alert', function () {
 
   describe('Rest API', function () {
 
+    let jurisdiction;
+    let alert;
+
     before(function (done) {
-      Alert.remove(done);
+      Jurisdiction.deleteMany(done);
     });
 
-    let status;
+    before(function (done) {
+      jurisdiction = Jurisdiction.fake();
+      jurisdiction.post(function (error, created) {
+        jurisdiction = created;
+        done(error, created);
+      });
+    });
+
+    before(function (done) {
+      Alert.deleteMany(done);
+    });
+
 
     it('should handle HTTP POST on /alerts', function (done) {
 
-      status = Alert.fake();
+      alert = Alert.fake();
+      alert.jurisdictions = [].concat(jurisdiction);
 
       request(app)
         .post(`/v${apiVersion}/alerts`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
-        .send(status)
+        .send(alert)
         .expect(201)
         .end(function (error, response) {
           expect(error).to.not.exist;
@@ -75,7 +91,7 @@ describe.skip('Alert', function () {
     it('should handle HTTP GET on /alerts/id:', function (done) {
 
       request(app)
-        .get(`/v${apiVersion}/alerts/${status._id}`)
+        .get(`/v${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .expect(200)
         .end(function (error, response) {
@@ -84,8 +100,8 @@ describe.skip('Alert', function () {
 
           const found = response.body;
           expect(found._id).to.exist;
-          expect(found._id).to.be.equal(status._id.toString());
-          expect(found.subject).to.be.equal(status.subject);
+          expect(found._id).to.be.equal(alert._id.toString());
+          expect(found.subject).to.be.equal(alert.subject);
 
           done(error, response);
 
@@ -95,10 +111,10 @@ describe.skip('Alert', function () {
 
     it('should handle HTTP PATCH on /alerts/id:', function (done) {
 
-      const patch = status.fakeOnly('name');
+      const patch = alert.fakeOnly('subject');
 
       request(app)
-        .patch(`/v${apiVersion}/alerts/${status._id}`)
+        .patch(`/v${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(patch)
@@ -110,8 +126,8 @@ describe.skip('Alert', function () {
           const patched = response.body;
 
           expect(patched._id).to.exist;
-          expect(patched._id).to.be.equal(status._id.toString());
-          expect(patched.subject).to.be.equal(status.subject);
+          expect(patched._id).to.be.equal(alert._id.toString());
+          expect(patched.subject).to.be.equal(alert.subject);
 
           done(error, response);
 
@@ -121,10 +137,10 @@ describe.skip('Alert', function () {
 
     it('should handle HTTP PUT on /alerts/id:', function (done) {
 
-      const put = status.fakeOnly('name');
+      const put = alert.fakeOnly('subject');
 
       request(app)
-        .put(`/v${apiVersion}/alerts/${status._id}`)
+        .put(`/v${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(put)
@@ -136,8 +152,8 @@ describe.skip('Alert', function () {
           const updated = response.body;
 
           expect(updated._id).to.exist;
-          expect(updated._id).to.be.equal(status._id.toString());
-          expect(updated.subject).to.be.equal(status.subject);
+          expect(updated._id).to.be.equal(alert._id.toString());
+          expect(updated.subject).to.be.equal(alert.subject);
 
           done(error, response);
 
@@ -148,7 +164,7 @@ describe.skip('Alert', function () {
     it('should handle HTTP DELETE on /alerts/:id', function (done) {
 
       request(app)
-        .delete(`/v${apiVersion}/alerts/${status._id}`)
+        .delete(`/v${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .expect(200)
         .end(function (error, response) {
@@ -158,8 +174,8 @@ describe.skip('Alert', function () {
           const deleted = response.body;
 
           expect(deleted._id).to.exist;
-          expect(deleted._id).to.be.equal(status._id.toString());
-          expect(deleted.subject).to.be.equal(status.subject);
+          expect(deleted._id).to.be.equal(alert._id.toString());
+          expect(deleted.subject).to.be.equal(alert.subject);
 
           done(error, response);
 
@@ -168,7 +184,7 @@ describe.skip('Alert', function () {
     });
 
     after(function (done) {
-      Alert.remove(done);
+      Alert.deleteMany(done);
     });
 
   });

@@ -12,7 +12,7 @@ describe('Alert', function () {
   let jurisdiction;
 
   before(function (done) {
-    Jurisdiction.remove(done);
+    Jurisdiction.deleteMany(done);
   });
 
   before(function (done) {
@@ -24,7 +24,7 @@ describe('Alert', function () {
   });
 
   before(function (done) {
-    Alert.remove(done);
+    Alert.deleteMany(done);
   });
 
   describe('get by id', function () {
@@ -56,7 +56,7 @@ describe('Alert', function () {
 
     });
 
-    it.skip('should be able to get with options', function (done) {
+    it('should be able to get with options', function (done) {
 
       const options = {
         _id: alert._id,
@@ -65,7 +65,6 @@ describe('Alert', function () {
 
       Alert
         .getById(options, function (error, found) {
-          console.log(found);
           expect(error).to.not.exist;
           expect(found).to.exist;
           expect(found._id).to.eql(alert._id);
@@ -86,7 +85,7 @@ describe('Alert', function () {
 
     });
 
-    it.skip('should throw if not exists', function (done) {
+    it('should throw if not exists', function (done) {
 
       const alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
@@ -94,7 +93,7 @@ describe('Alert', function () {
       Alert
         .getById(alert._id, function (error, found) {
           expect(error).to.exist;
-          expect(error.staus).to.exist;
+          expect(error.status).to.exist;
           expect(error.message).to.be.equal('Not Found');
           expect(found).to.not.exist;
           done();
@@ -105,11 +104,11 @@ describe('Alert', function () {
   });
 
   after(function (done) {
-    Alert.remove(done);
+    Alert.deleteMany(done);
   });
 
   after(function (done) {
-    Jurisdiction.remove(done);
+    Jurisdiction.deleteMany(done);
   });
 
 });

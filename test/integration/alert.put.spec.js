@@ -11,7 +11,7 @@ describe('Alert', function () {
   let jurisdiction;
 
   before(function (done) {
-    Jurisdiction.remove(done);
+    Jurisdiction.deleteMany(done);
   });
 
   before(function (done) {
@@ -23,7 +23,7 @@ describe('Alert', function () {
   });
 
   before(function (done) {
-    Alert.remove(done);
+    Alert.deleteMany(done);
   });
 
   describe('static put', function () {
@@ -58,7 +58,7 @@ describe('Alert', function () {
 
     });
 
-    it.skip('should throw if not exists', function (done) {
+    it('should throw if not exists', function (done) {
 
       const fake = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
@@ -66,7 +66,7 @@ describe('Alert', function () {
       Alert
         .put(fake._id, fake, function (error, updated) {
           expect(error).to.exist;
-          expect(error.alert).to.exist;
+          expect(error.status).to.exist;
           expect(error.message).to.be.equal('Not Found');
           expect(updated).to.not.exist;
           done();
@@ -119,11 +119,11 @@ describe('Alert', function () {
   });
 
   after(function (done) {
-    Alert.remove(done);
+    Alert.deleteMany(done);
   });
 
   after(function (done) {
-    Jurisdiction.remove(done);
+    Jurisdiction.deleteMany(done);
   });
 
 });

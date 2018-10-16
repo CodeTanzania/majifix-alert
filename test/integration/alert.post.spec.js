@@ -11,7 +11,7 @@ describe('Alert', function () {
   let jurisdiction;
 
   before(function (done) {
-    Jurisdiction.remove(done);
+    Jurisdiction.deleteMany(done);
   });
 
   before(function (done) {
@@ -23,7 +23,7 @@ describe('Alert', function () {
   });
 
   before(function (done) {
-    Alert.remove(done);
+    Alert.deleteMany(done);
   });
 
   describe('static post', function () {
@@ -75,11 +75,11 @@ describe('Alert', function () {
   });
 
   after(function (done) {
-    Alert.remove(done);
+    Alert.deleteMany(done);
   });
 
   after(function (done) {
-    Jurisdiction.remove(done);
+    Jurisdiction.deleteMany(done);
   });
 
 });
