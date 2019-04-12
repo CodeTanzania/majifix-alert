@@ -11,11 +11,11 @@ const Alert =
   require(path.join(__dirname, '..', '..', 'lib', 'alert.model'));
 
 
-describe('Alert', function () {
+describe('Alert', () => {
 
-  describe('Schema', function () {
+  describe('Schema', () => {
 
-    it('should have jurisdictions field', function () {
+    it('should have jurisdictions field', () => {
 
       const jurisdictions = Alert.schema.tree.jurisdictions;
       const instance = Alert.schema.paths.jurisdictions.instance;
@@ -31,7 +31,7 @@ describe('Alert', function () {
 
     });
 
-    it('should have subject field', function () {
+    it('should have subject field', () => {
 
       const subject = Alert.schema.tree.subject;
       const instance = Alert.schema.paths.subject.instance;
@@ -45,7 +45,7 @@ describe('Alert', function () {
 
     });
 
-    it('should have message field', function () {
+    it('should have message field', () => {
 
       const message = Alert.schema.tree.message;
       const instance = Alert.schema.paths.message.instance;
@@ -59,7 +59,7 @@ describe('Alert', function () {
 
     });
 
-    it('should have methods field', function () {
+    it('should have methods field', () => {
 
       const methods = Alert.schema.tree.methods;
       const instance = Alert.schema.paths.methods.instance;
