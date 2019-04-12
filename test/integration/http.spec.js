@@ -42,7 +42,7 @@ describe('Alert', () => {
       alert.jurisdictions = [].concat(jurisdiction);
 
       request(app)
-        .post(`/v${apiVersion}/alerts`)
+        .post(`/${apiVersion}/alerts`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(alert)
@@ -65,7 +65,7 @@ describe('Alert', () => {
     it('should handle HTTP GET on /alerts', done => {
 
       request(app)
-        .get(`/v${apiVersion}/alerts`)
+        .get(`/${apiVersion}/alerts`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /json/)
@@ -91,7 +91,7 @@ describe('Alert', () => {
     it('should handle HTTP GET on /alerts/id:', done => {
 
       request(app)
-        .get(`/v${apiVersion}/alerts/${alert._id}`)
+        .get(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .expect(200)
         .end((error, response) => {
@@ -114,7 +114,7 @@ describe('Alert', () => {
       const patch = alert.fakeOnly('subject');
 
       request(app)
-        .patch(`/v${apiVersion}/alerts/${alert._id}`)
+        .patch(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(patch)
@@ -140,7 +140,7 @@ describe('Alert', () => {
       const put = alert.fakeOnly('subject');
 
       request(app)
-        .put(`/v${apiVersion}/alerts/${alert._id}`)
+        .put(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(put)
@@ -164,7 +164,7 @@ describe('Alert', () => {
     it('should handle HTTP DELETE on /alerts/:id', done => {
 
       request(app)
-        .delete(`/v${apiVersion}/alerts/${alert._id}`)
+        .delete(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .expect(200)
         .end((error, response) => {
