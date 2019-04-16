@@ -6,46 +6,46 @@ const { expect } = require('chai');
 const { Jurisdiction } = require('@codetanzania/majifix-jurisdiction');
 const { Alert } = require(path.join(__dirname, '..', '..'));
 
-describe('Alert', function () {
+describe('Alert', () => {
 
   let jurisdiction;
 
-  before(function (done) {
+  before(done => {
     Jurisdiction.deleteMany(done);
   });
 
-  before(function (done) {
+  before(done => {
     jurisdiction = Jurisdiction.fake();
-    jurisdiction.post(function (error, created) {
+    jurisdiction.post((error, created) => {
       jurisdiction = created;
       done(error, created);
     });
   });
 
-  before(function (done) {
+  before(done => {
     Alert.deleteMany(done);
   });
 
-  describe('static put', function () {
+  describe('static put', () => {
 
     let alert;
 
-    before(function (done) {
+    before(done => {
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
       alert
-        .post(function (error, created) {
+        .post((error, created) => {
           alert = created;
           done(error, created);
         });
     });
 
-    it('should be able to put', function (done) {
+    it('should be able to put', done => {
 
       alert = alert.fakeOnly('name');
 
       Alert
-        .put(alert._id, alert, function (error, updated) {
+        .put(alert._id, alert, (error, updated) => {
           expect(error).to.not.exist;
           expect(updated).to.exist;
           expect(updated._id).to.eql(alert._id);
@@ -58,13 +58,13 @@ describe('Alert', function () {
 
     });
 
-    it('should throw if not exists', function (done) {
+    it('should throw if not exists', done => {
 
       const fake = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
 
       Alert
-        .put(fake._id, fake, function (error, updated) {
+        .put(fake._id, fake, (error, updated) => {
           expect(error).to.exist;
           expect(error.status).to.exist;
           expect(error.message).to.be.equal('Not Found');
@@ -76,25 +76,25 @@ describe('Alert', function () {
 
   });
 
-  describe('instance put', function () {
+  describe('instance put', () => {
 
     let alert;
 
-    before(function (done) {
+    before(done => {
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
       alert
-        .post(function (error, created) {
+        .post((error, created) => {
           alert = created;
           done(error, created);
         });
     });
 
-    it('should be able to put', function (done) {
+    it('should be able to put', done => {
       alert = alert.fakeOnly('name');
 
       alert
-        .put(function (error, updated) {
+        .put((error, updated) => {
           expect(error).to.not.exist;
           expect(updated).to.exist;
           expect(updated._id).to.eql(alert._id);
@@ -104,10 +104,10 @@ describe('Alert', function () {
 
     });
 
-    it('should throw if not exists', function (done) {
+    it('should throw if not exists', done => {
 
       alert
-        .put(function (error, updated) {
+        .put((error, updated) => {
           expect(error).to.not.exist;
           expect(updated).to.exist;
           expect(updated._id).to.eql(alert._id);
@@ -118,11 +118,11 @@ describe('Alert', function () {
 
   });
 
-  after(function (done) {
+  after(done => {
     Alert.deleteMany(done);
   });
 
-  after(function (done) {
+  after(done => {
     Jurisdiction.deleteMany(done);
   });
 

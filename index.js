@@ -70,7 +70,7 @@ exports.router = exports.alertRouter = router;
 
 
 /* export router api version */
-exports.apiVersion = router.apiVersion;
+exports.apiVersion = router.version;
 
 
 /* export app */
