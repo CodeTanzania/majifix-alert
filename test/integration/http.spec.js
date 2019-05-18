@@ -1,43 +1,35 @@
-'use strict';
-
-/* dependencies */
-const path = require('path');
-const request = require('supertest');
-const { expect } = require('chai');
-const { Jurisdiction } = require('@codetanzania/majifix-jurisdiction');
-const {
-  Alert,
-  apiVersion,
-  app
-} = require(path.join(__dirname, '..', '..'));
-
+import request from 'supertest';
+import { expect } from 'chai';
+import { app, mount } from '@lykmapipo/express-common';
+import { clear, create } from '@lykmapipo/mongoose-test-helpers';
+import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
+import { Alert, apiVersion, router } from '../../src/index';
 
 describe('Alert', () => {
+  mount(router);
 
   describe('Rest API', () => {
-
-    let jurisdiction;
+    const jurisdiction = Jurisdiction.fake();
     let alert;
 
-    before(done => {
-      Jurisdiction.deleteMany(done);
-    });
+    // before(done => {
+    //   Jurisdiction.deleteMany(done);
+    // });
+    before(done => create(jurisdiction, done));
 
-    before(done => {
-      jurisdiction = Jurisdiction.fake();
-      jurisdiction.post((error, created) => {
-        jurisdiction = created;
-        done(error, created);
-      });
-    });
+    // before(done => {
+    //   jurisdiction = Jurisdiction.fake();
+    //   jurisdiction.post((error, created) => {
+    //     jurisdiction = created;
+    //     done(error, created);
+    //   });
+    // });
 
-    before(done => {
-      Alert.deleteMany(done);
-    });
-
+    // before(done => {
+    //   Alert.deleteMany(done);
+    // });
 
     it('should handle HTTP POST on /alerts', done => {
-
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
 
@@ -57,13 +49,10 @@ describe('Alert', () => {
           expect(created.subject).to.exist;
 
           done(error, response);
-
         });
-
     });
 
     it('should handle HTTP GET on /alerts', done => {
-
       request(app)
         .get(`/${apiVersion}/alerts`)
         .set('Accept', 'application/json')
@@ -73,7 +62,7 @@ describe('Alert', () => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
-          //assert payload
+          // assert payload
           const result = response.body;
           expect(result.data).to.exist;
           expect(result.total).to.exist;
@@ -83,13 +72,10 @@ describe('Alert', () => {
           expect(result.pages).to.exist;
           expect(result.lastModified).to.exist;
           done(error, response);
-
         });
-
     });
 
     it('should handle HTTP GET on /alerts/id:', done => {
-
       request(app)
         .get(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
@@ -104,13 +90,10 @@ describe('Alert', () => {
           expect(found.subject).to.be.equal(alert.subject);
 
           done(error, response);
-
         });
-
     });
 
     it('should handle HTTP PATCH on /alerts/id:', done => {
-
       const patch = alert.fakeOnly('subject');
 
       request(app)
@@ -130,13 +113,10 @@ describe('Alert', () => {
           expect(patched.subject).to.be.equal(alert.subject);
 
           done(error, response);
-
         });
-
     });
 
     it('should handle HTTP PUT on /alerts/id:', done => {
-
       const put = alert.fakeOnly('subject');
 
       request(app)
@@ -156,13 +136,10 @@ describe('Alert', () => {
           expect(updated.subject).to.be.equal(alert.subject);
 
           done(error, response);
-
         });
-
     });
 
     it('should handle HTTP DELETE on /alerts/:id', done => {
-
       request(app)
         .delete(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
@@ -178,15 +155,9 @@ describe('Alert', () => {
           expect(deleted.subject).to.be.equal(alert.subject);
 
           done(error, response);
-
         });
-
     });
 
-    after(done => {
-      Alert.deleteMany(done);
-    });
-
+    after(done => clear('Alert', 'Jurisdiction', done));
   });
-
 });
