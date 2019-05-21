@@ -6,7 +6,10 @@
   "scripts": {
     "test": "grunt test",
     "integration": "grunt integration",
-    "dev": "BASE_PATH=./examples node ./examples/app.js"
+    "dev": "BASE_PATH=./examples node ./examples/app.js",
+    "commit": "git-cz",
+    "commit:all": "git add -A && git-cz",
+    "changelog": "changelog"
   },
   "repository": {
     "type": "git",
@@ -46,6 +49,15 @@
   },
   "devDependencies": {
     "@benmaruchu/faker": "^4.2.1",
+    "@commitlint/cli": "^7.6.1",
+    "@commitlint/config-conventional": "^7.6.0",
+    "@commitlint/travis-cli": "^7.6.1",
+    "commitizen": "^3.1.1",
+    "cz-conventional-changelog": "^2.1.0",
+    "generate-changelog": "^1.7.1",
+    "lint-staged": "^8.1.7",
+    "prettier": "^1.17.1",
+    "husky": "^2.3.0",
     "chai": "^4.2.0",
     "grunt": "^1.0.4",
     "grunt-apidoc": "^0.11.0",
@@ -55,30 +67,57 @@
     "jshint-stylish": "^2.2.1",
     "kue": "^0.11.6",
     "mocha": "^6.1.4",
-    "mongoose": "5.5.10",
-    "mongoose-geojson-schemas": "^0.10.5",
-    "randomcolor": "^0.5.4",
+    "mongoose": "5.5.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "sinon-mongoose": "^2.3.0",
     "supertest": "^4.0.2"
   },
   "dependencies": {
-    "@codetanzania/majifix-account": "^1.7.4",
-    "@codetanzania/majifix-common": "^0.12.4",
-    "@codetanzania/majifix-jurisdiction": "^1.5.5",
-    "@lykmapipo/env": "^0.7.7",
-    "@lykmapipo/express-common": "^0.17.3",
-    "@lykmapipo/postman": "^0.5.5",
-    "async": "^3.0.0",
-    "express": "^4.17.0",
-    "lodash": "^4.17.11",
-    "moment": "^2.24.0",
-    "mongoose-kue": "^0.7.4",
-    "mongoose-geojson-schemas": "^0.10.5",
-    "mongoose-locale-schema": "^0.3.1",
-    "mongoose-rest-actions": "^0.28.1",
-    "randomcolor": "^0.5.4"
+    "@codetanzania/majifix-account": ">=1.7.5",
+    "@codetanzania/majifix-common": ">=0.12.4",
+    "@codetanzania/majifix-jurisdiction": ">=1.5.5",
+    "@lykmapipo/env": ">=0.7.7",
+    "@lykmapipo/express-common": ">=0.17.3",
+    "@lykmapipo/postman": ">=0.5.5",
+    "async": ">=3.0.0",
+    "express": ">=4.17.0",
+    "lodash": ">=4.17.11",
+    "moment": ">=2.24.0",
+    "mongoose-kue": ">=0.7.4",
+    "mongoose-geojson-schemas": ">=0.10.5",
+    "mongoose-locale-schema": ">=0.3.1",
+    "mongoose-rest-actions": ">=0.28.1",
+    "randomcolor": ">=0.5.4"
+  },
+  "peerDependencies": {
+    "mongoose": ">=5.5.10"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{md,html}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   },
   "engines": {
     "node": ">=8.11.1",

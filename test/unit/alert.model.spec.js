@@ -11,11 +11,11 @@ const Alert =
   require(path.join(__dirname, '..', '..', 'lib', 'alert.model'));
 
 
-describe('Alert', function () {
+describe('Alert', () => {
 
-  describe('Statics', function () {
+  describe('Statics', () => {
 
-    it('should expose model name as constant', function () {
+    it('should expose model name as constant', () => {
       expect(Alert.MODEL_NAME).to.exist;
       expect(Alert.MODEL_NAME).to.be.equal('Alert');
     });
