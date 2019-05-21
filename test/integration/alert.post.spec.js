@@ -6,37 +6,37 @@ const { expect } = require('chai');
 const { Jurisdiction } = require('@codetanzania/majifix-jurisdiction');
 const { Alert } = require(path.join(__dirname, '..', '..'));
 
-describe('Alert', function () {
+describe('Alert', () => {
 
   let jurisdiction;
 
-  before(function (done) {
+  before(done => {
     Jurisdiction.deleteMany(done);
   });
 
-  before(function (done) {
+  before(done => {
     jurisdiction = Jurisdiction.fake();
-    jurisdiction.post(function (error, created) {
+    jurisdiction.post((error, created) => {
       jurisdiction = created;
       done(error, created);
     });
   });
 
-  before(function (done) {
+  before(done => {
     Alert.deleteMany(done);
   });
 
-  describe('static post', function () {
+  describe('static post', () => {
 
     let alert;
 
-    it('should be able to post', function (done) {
+    it('should be able to post', done => {
 
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
 
       Alert
-        .post(alert, function (error, created) {
+        .post(alert, (error, created) => {
           expect(error).to.not.exist;
           expect(created).to.exist;
           expect(created._id).to.eql(alert._id);
@@ -52,17 +52,17 @@ describe('Alert', function () {
 
   });
 
-  describe('instance post', function () {
+  describe('instance post', () => {
 
     let alert;
 
-    it('should be able to post', function (done) {
+    it('should be able to post', done => {
 
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
 
       alert
-        .post(function (error, created) {
+        .post((error, created) => {
           expect(error).to.not.exist;
           expect(created).to.exist;
           expect(created._id).to.eql(alert._id);
@@ -74,11 +74,11 @@ describe('Alert', function () {
 
   });
 
-  after(function (done) {
+  after(done => {
     Alert.deleteMany(done);
   });
 
-  after(function (done) {
+  after(done => {
     Jurisdiction.deleteMany(done);
   });
 

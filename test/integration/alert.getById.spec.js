@@ -7,44 +7,44 @@ const { expect } = require('chai');
 const { Jurisdiction } = require('@codetanzania/majifix-jurisdiction');
 const { Alert } = require(path.join(__dirname, '..', '..'));
 
-describe('Alert', function () {
+describe('Alert', () => {
 
   let jurisdiction;
 
-  before(function (done) {
+  before(done => {
     Jurisdiction.deleteMany(done);
   });
 
-  before(function (done) {
+  before(done => {
     jurisdiction = Jurisdiction.fake();
-    jurisdiction.post(function (error, created) {
+    jurisdiction.post((error, created) => {
       jurisdiction = created;
       done(error, created);
     });
   });
 
-  before(function (done) {
+  before(done => {
     Alert.deleteMany(done);
   });
 
-  describe('get by id', function () {
+  describe('get by id', () => {
 
     let alert;
 
-    before(function (done) {
+    before(done => {
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
       alert
-        .post(function (error, created) {
+        .post((error, created) => {
           alert = created;
           done(error, created);
         });
     });
 
-    it('should be able to get an instance', function (done) {
+    it('should be able to get an instance', done => {
 
       Alert
-        .getById(alert._id, function (error, found) {
+        .getById(alert._id, (error, found) => {
           expect(error).to.not.exist;
           expect(found).to.exist;
           expect(found._id).to.eql(alert._id);
@@ -56,7 +56,7 @@ describe('Alert', function () {
 
     });
 
-    it('should be able to get with options', function (done) {
+    it('should be able to get with options', done => {
 
       const options = {
         _id: alert._id,
@@ -64,7 +64,7 @@ describe('Alert', function () {
       };
 
       Alert
-        .getById(options, function (error, found) {
+        .getById(options, (error, found) => {
           expect(error).to.not.exist;
           expect(found).to.exist;
           expect(found._id).to.eql(alert._id);
@@ -75,7 +75,7 @@ describe('Alert', function () {
           expect(fields).to.have.length(3);
           _.map([
             'message'
-          ], function (field) {
+          ], field => {
             expect(fields).to.not.include(field);
           });
 
@@ -85,16 +85,16 @@ describe('Alert', function () {
 
     });
 
-    it('should throw if not exists', function (done) {
+    it('should throw if not exists', done => {
 
       const alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
 
       Alert
-        .getById(alert._id, function (error, found) {
+        .getById(alert._id, (error, found) => {
           expect(error).to.exist;
-          expect(error.status).to.exist;
-          expect(error.message).to.be.equal('Not Found');
+          // expect(error.status).to.exist;
+          expect(error.name).to.be.equal('DocumentNotFoundError');
           expect(found).to.not.exist;
           done();
         });
@@ -103,11 +103,11 @@ describe('Alert', function () {
 
   });
 
-  after(function (done) {
+  after(done => {
     Alert.deleteMany(done);
   });
 
-  after(function (done) {
+  after(done => {
     Jurisdiction.deleteMany(done);
   });
 

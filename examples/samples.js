@@ -6,6 +6,7 @@ const faker = require('@benmaruchu/faker');
 
 function sample() {
   return {
+    receivers: ['Employees'],
     subject: faker.hacker.noun(),
     message: faker.lorem.sentence(),
     statistics: {

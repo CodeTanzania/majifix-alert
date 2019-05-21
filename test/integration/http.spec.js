@@ -12,42 +12,42 @@ const {
 } = require(path.join(__dirname, '..', '..'));
 
 
-describe('Alert', function () {
+describe('Alert', () => {
 
-  describe('Rest API', function () {
+  describe('Rest API', () => {
 
     let jurisdiction;
     let alert;
 
-    before(function (done) {
+    before(done => {
       Jurisdiction.deleteMany(done);
     });
 
-    before(function (done) {
+    before(done => {
       jurisdiction = Jurisdiction.fake();
-      jurisdiction.post(function (error, created) {
+      jurisdiction.post((error, created) => {
         jurisdiction = created;
         done(error, created);
       });
     });
 
-    before(function (done) {
+    before(done => {
       Alert.deleteMany(done);
     });
 
 
-    it('should handle HTTP POST on /alerts', function (done) {
+    it('should handle HTTP POST on /alerts', done => {
 
       alert = Alert.fake();
       alert.jurisdictions = [].concat(jurisdiction);
 
       request(app)
-        .post(`/v${apiVersion}/alerts`)
+        .post(`/${apiVersion}/alerts`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(alert)
         .expect(201)
-        .end(function (error, response) {
+        .end((error, response) => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
@@ -62,14 +62,14 @@ describe('Alert', function () {
 
     });
 
-    it('should handle HTTP GET on /alerts', function (done) {
+    it('should handle HTTP GET on /alerts', done => {
 
       request(app)
-        .get(`/v${apiVersion}/alerts`)
+        .get(`/${apiVersion}/alerts`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /json/)
-        .end(function (error, response) {
+        .end((error, response) => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
@@ -88,13 +88,13 @@ describe('Alert', function () {
 
     });
 
-    it('should handle HTTP GET on /alerts/id:', function (done) {
+    it('should handle HTTP GET on /alerts/id:', done => {
 
       request(app)
-        .get(`/v${apiVersion}/alerts/${alert._id}`)
+        .get(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .expect(200)
-        .end(function (error, response) {
+        .end((error, response) => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
@@ -109,17 +109,17 @@ describe('Alert', function () {
 
     });
 
-    it('should handle HTTP PATCH on /alerts/id:', function (done) {
+    it('should handle HTTP PATCH on /alerts/id:', done => {
 
       const patch = alert.fakeOnly('subject');
 
       request(app)
-        .patch(`/v${apiVersion}/alerts/${alert._id}`)
+        .patch(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(patch)
         .expect(200)
-        .end(function (error, response) {
+        .end((error, response) => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
@@ -135,17 +135,17 @@ describe('Alert', function () {
 
     });
 
-    it('should handle HTTP PUT on /alerts/id:', function (done) {
+    it('should handle HTTP PUT on /alerts/id:', done => {
 
       const put = alert.fakeOnly('subject');
 
       request(app)
-        .put(`/v${apiVersion}/alerts/${alert._id}`)
+        .put(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send(put)
         .expect(200)
-        .end(function (error, response) {
+        .end((error, response) => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
@@ -161,13 +161,13 @@ describe('Alert', function () {
 
     });
 
-    it('should handle HTTP DELETE on /alerts/:id', function (done) {
+    it('should handle HTTP DELETE on /alerts/:id', done => {
 
       request(app)
-        .delete(`/v${apiVersion}/alerts/${alert._id}`)
+        .delete(`/${apiVersion}/alerts/${alert._id}`)
         .set('Accept', 'application/json')
         .expect(200)
-        .end(function (error, response) {
+        .end((error, response) => {
           expect(error).to.not.exist;
           expect(response).to.exist;
 
@@ -183,7 +183,7 @@ describe('Alert', function () {
 
     });
 
-    after(function (done) {
+    after(done => {
       Alert.deleteMany(done);
     });
 
