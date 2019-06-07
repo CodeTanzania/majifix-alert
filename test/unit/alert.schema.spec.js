@@ -1,24 +1,14 @@
-'use strict';
-
-
 /* dependencies */
-const path = require('path');
-const { expect } = require('chai');
-
+import { expect } from 'chai';
 
 /* declarations */
-const Alert =
-  require(path.join(__dirname, '..', '..', 'lib', 'alert.model'));
-
+import Alert from '../../src/alert.model';
 
 describe('Alert', () => {
-
   describe('Schema', () => {
-
     it('should have jurisdictions field', () => {
-
-      const jurisdictions = Alert.schema.tree.jurisdictions;
-      const instance = Alert.schema.paths.jurisdictions.instance;
+      const { jurisdictions } = Alert.schema.tree;
+      const { instance } = Alert.schema.paths.jurisdictions;
 
       expect(instance).to.be.equal('Array');
       expect(jurisdictions).to.exist;
@@ -28,13 +18,11 @@ describe('Alert', () => {
       expect(jurisdictions.index).to.be.true;
       expect(jurisdictions.exists).to.be.an('object');
       expect(jurisdictions.autopopulate).to.exist;
-
     });
 
     it('should have subject field', () => {
-
-      const subject = Alert.schema.tree.subject;
-      const instance = Alert.schema.paths.subject.instance;
+      const { subject } = Alert.schema.tree;
+      const { instance } = Alert.schema.paths.subject;
 
       expect(instance).to.be.equal('String');
       expect(subject).to.exist;
@@ -42,13 +30,11 @@ describe('Alert', () => {
       expect(subject.type).to.be.a('function');
       expect(subject.type.name).to.be.equal('String');
       expect(subject.trim).to.be.true;
-
     });
 
     it('should have message field', () => {
-
-      const message = Alert.schema.tree.message;
-      const instance = Alert.schema.paths.message.instance;
+      const { message } = Alert.schema.tree;
+      const { instance } = Alert.schema.paths.message;
 
       expect(instance).to.be.equal('String');
       expect(message).to.exist;
@@ -56,22 +42,17 @@ describe('Alert', () => {
       expect(message.type).to.be.a('function');
       expect(message.type.name).to.be.equal('String');
       expect(message.trim).to.be.true;
-
     });
 
     it('should have methods field', () => {
-
-      const methods = Alert.schema.tree.methods;
-      const instance = Alert.schema.paths.methods.instance;
+      const { methods } = Alert.schema.tree;
+      const { instance } = Alert.schema.paths.methods;
 
       expect(instance).to.be.equal('Array');
       expect(methods).to.exist;
       expect(methods).to.be.an('object');
       expect(methods.type[0]).to.be.a('function');
       expect(methods.type[0].name).to.be.equal('String');
-
     });
-
   });
-
 });
