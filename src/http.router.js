@@ -1,6 +1,3 @@
-'use strict';
-
-
 /**
  * @apiDefine Alert  Alert
  *
@@ -14,7 +11,6 @@
  * @version 1.0.0
  * @public
  */
-
 
 /**
  * @apiDefine Alert
@@ -31,7 +27,6 @@
  * @apiSuccess {Date} updatedAt Date when status was last updated
  *
  */
-
 
 /**
  * @apiDefine Alerts
@@ -58,7 +53,6 @@
  *
  */
 
-
 /**
  * @apiDefine AlertSuccessResponse
  * @apiSuccessExample {json} Success-Response:
@@ -76,7 +70,6 @@
  *    "updatedAt": "2018-05-06T10:16:19.230Z",
  *  }
  */
-
 
 /**
  * @apiDefine AlertsSuccessResponse
@@ -107,27 +100,22 @@
  * }
  */
 
-
 /* dependencies */
-const path = require('path');
-const _ = require('lodash');
-const Router = require('@lykmapipo/express-common').Router;
-const { getString } = require('@lykmapipo/env');
-
+import _ from 'lodash';
+import { Router } from '@lykmapipo/express-common';
+import { getString } from '@lykmapipo/env';
+import Alert from './alert.model';
 
 /* local constants */
-const API_VERSION = getString('API_VERSION','1.0.0');
+const API_VERSION = getString('API_VERSION', '1.0.0');
 const PATH_LIST = '/alerts';
 const PATH_SINGLE = '/alerts/:id';
 const PATH_JURISDICTION = '/jurisdictions/:jurisdiction/alerts';
 
-
 /* declarations */
-const Alert = require(path.join(__dirname, 'alert.model'));
 const router = new Router({
-  version: API_VERSION
+  version: API_VERSION,
 });
-
 
 /**
  * @api {get} /alerts List Alerts
@@ -147,28 +135,22 @@ const router = new Router({
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.get(PATH_LIST, function getAlerts(request, response, next) {
-
-  //obtain request options
+  // obtain request options
   const options = _.merge({}, request.mquery);
 
-  Alert
-    .get(options, function onGetAlerts(error, results) {
+  Alert.get(options, function onGetAlerts(error, results) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(200);
-        response.json(results);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(200);
+      response.json(results);
+    }
+  });
 });
-
 
 /**
  * @api {post} /alerts Create New Alert
@@ -188,28 +170,22 @@ router.get(PATH_LIST, function getAlerts(request, response, next) {
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.post(PATH_LIST, function postAlert(request, response, next) {
-
-  //obtain request body
+  // obtain request body
   const body = _.merge({}, request.body);
 
-  Alert
-    .send(body, function onPostAlert(error, created) {
+  Alert.send(body, function onPostAlert(error, created) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(201);
-        response.json(created);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(201);
+      response.json(created);
+    }
+  });
 });
-
 
 /**
  * @api {get} /alerts/:id Get Existing Alert
@@ -229,31 +205,25 @@ router.post(PATH_LIST, function postAlert(request, response, next) {
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.get(PATH_SINGLE, function getAlert(request, response, next) {
-
-  //obtain request options
+  // obtain request options
   const options = _.merge({}, request.mquery);
 
-  //obtain status id
-  options._id = request.params.id;
+  // obtain status id
+  options._id = request.params.id; // eslint-disable-line no-underscore-dangle
 
-  Alert
-    .getById(options, function onGetAlert(error, found) {
+  Alert.getById(options, function onGetAlert(error, found) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(200);
-        response.json(found);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(200);
+      response.json(found);
+    }
+  });
 });
-
 
 /**
  * @api {patch} /alerts/:id Patch Existing Alert
@@ -273,31 +243,25 @@ router.get(PATH_SINGLE, function getAlert(request, response, next) {
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.patch(PATH_SINGLE, function patchAlert(request, response, next) {
-
-  //obtain status id
+  // obtain status id
   const { id } = request.params;
 
-  //obtain request body
+  // obtain request body
   const patches = _.merge({}, request.body);
 
-  Alert
-    .patch(id, patches, function onPatchAlert(error, patched) {
+  Alert.patch(id, patches, function onPatchAlert(error, patched) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(200);
-        response.json(patched);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(200);
+      response.json(patched);
+    }
+  });
 });
-
 
 /**
  * @api {put} /alerts/:id Put Existing Alert
@@ -317,31 +281,25 @@ router.patch(PATH_SINGLE, function patchAlert(request, response, next) {
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.put(PATH_SINGLE, function putAlert(request, response, next) {
-
-  //obtain status id
+  // obtain status id
   const { id } = request.params;
 
-  //obtain request body
+  // obtain request body
   const updates = _.merge({}, request.body);
 
-  Alert
-    .put(id, updates, function onPutAlert(error, updated) {
+  Alert.put(id, updates, function onPutAlert(error, updated) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(200);
-        response.json(updated);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(200);
+      response.json(updated);
+    }
+  });
 });
-
 
 /**
  * @api {delete} /alerts/:id Delete Existing Alert
@@ -361,28 +319,22 @@ router.put(PATH_SINGLE, function putAlert(request, response, next) {
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.delete(PATH_SINGLE, function deleteAlert(request, response, next) {
-
-  //obtain status id
+  // obtain status id
   const { id } = request.params;
 
-  Alert
-    .del(id, function onDeleteAlert(error, deleted) {
+  Alert.del(id, function onDeleteAlert(error, deleted) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(200);
-        response.json(deleted);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(200);
+      response.json(deleted);
+    }
+  });
 });
-
 
 /**
  * @api {get} /jurisdictions/:jurisdiction/alerts List Jurisdiction Alerts
@@ -402,8 +354,7 @@ router.delete(PATH_SINGLE, function deleteAlert(request, response, next) {
  * @apiUse AuthorizationHeaderErrorExample
  */
 router.get(PATH_JURISDICTION, function getAlerts(request, response, next) {
-
-  //obtain request options
+  // obtain request options
   const { jurisdiction } = request.params;
   let filter = {};
   if (jurisdiction) {
@@ -411,25 +362,19 @@ router.get(PATH_JURISDICTION, function getAlerts(request, response, next) {
   }
   const options = _.merge({}, filter, request.mquery);
 
+  Alert.get(options, function onGetAlerts(error, found) {
+    // forward error
+    if (error) {
+      next(error);
+    }
 
-  Alert
-    .get(options, function onGetAlerts(error, found) {
-
-      //forward error
-      if (error) {
-        next(error);
-      }
-
-      //handle response
-      else {
-        response.status(200);
-        response.json(found);
-      }
-
-    });
-
+    // handle response
+    else {
+      response.status(200);
+      response.json(found);
+    }
+  });
 });
 
-
 /* expose router */
-module.exports = router;
+export default router;
