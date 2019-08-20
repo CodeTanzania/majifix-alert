@@ -1,3 +1,4 @@
+/* dependencies */
 import request from 'supertest';
 import { expect } from 'chai';
 import { app, mount } from '@lykmapipo/express-common';
@@ -7,27 +8,13 @@ import { Alert, apiVersion, router } from '../../src/index';
 
 describe('Alert', () => {
   mount(router);
-
   describe('Rest API', () => {
     const jurisdiction = Jurisdiction.fake();
     let alert;
 
-    // before(done => {
-    //   Jurisdiction.deleteMany(done);
-    // });
+    before(done => clear(Alert, Jurisdiction, done));
+
     before(done => create(jurisdiction, done));
-
-    // before(done => {
-    //   jurisdiction = Jurisdiction.fake();
-    //   jurisdiction.post((error, created) => {
-    //     jurisdiction = created;
-    //     done(error, created);
-    //   });
-    // });
-
-    // before(done => {
-    //   Alert.deleteMany(done);
-    // });
 
     it('should handle HTTP POST on /alerts', done => {
       alert = Alert.fake();

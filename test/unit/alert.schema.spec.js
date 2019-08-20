@@ -1,4 +1,7 @@
+/* dependencies */
 import { expect } from 'chai';
+
+/* declarations */
 import Alert from '../../src/alert.model';
 
 describe('Alert', () => {

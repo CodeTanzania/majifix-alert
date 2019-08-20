@@ -22,10 +22,8 @@
 import { pkg } from '@lykmapipo/common';
 import Alert from './alert.model';
 import router from './http.router';
-
 /* declarations */
 const info = pkg(
-  '../package.json',
   'name',
   'description',
   'version',
@@ -36,7 +34,6 @@ const info = pkg(
   'sandbox',
   'contributors'
 );
-
 // extract api version from router version
 const apiVersion = router.version;
 

@@ -1,3 +1,4 @@
+/* dependencies */
 import { expect } from 'chai';
 import Alert from '../../src/alert.model';
 

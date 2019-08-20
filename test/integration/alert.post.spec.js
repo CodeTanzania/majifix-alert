@@ -1,28 +1,15 @@
 /* dependencies */
 import { expect } from 'chai';
 import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
-import { create, clear } from '@lykmapipo/mongoose-test-helpers';
+import { clear, create } from '@lykmapipo/mongoose-test-helpers';
 import { Alert } from '../../src/index';
 
 describe('Alert', () => {
   const jurisdiction = Jurisdiction.fake();
 
-  // before(done => {
-  //   Jurisdiction.deleteMany(done);
-  // });
+  before(done => clear(Alert, Jurisdiction, done));
+
   before(done => create(jurisdiction, done));
-
-  // before(done => {
-  //   jurisdiction = Jurisdiction.fake();
-  //   jurisdiction.post((error, created) => {
-  //     jurisdiction = created;
-  //     done(error, created);
-  //   });
-  // });
-
-  // before(done => {
-  //   Alert.deleteMany(done);
-  // });
 
   describe('static post', () => {
     let alert;
@@ -62,5 +49,5 @@ describe('Alert', () => {
     });
   });
 
-  after(done => clear('Jurisdiction', 'Alert', done));
+  after(done => clear('Alert', 'Jurisdiction', done));
 });

@@ -1,57 +1,34 @@
 /* dependencies */
 import _ from 'lodash';
+import async from 'async';
 import { expect } from 'chai';
 import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
-import { create, clear } from '@lykmapipo/mongoose-test-helpers';
+import { clear, create } from '@lykmapipo/mongoose-test-helpers';
 import { Alert } from '../../src/index';
 
 describe('Alert', () => {
   const jurisdiction = Jurisdiction.fake();
-  let alerts;
+
+  before(done => clear(Alert, Jurisdiction, done));
 
   before(done => create(jurisdiction, done));
-  // before(done => {
-  //   Jurisdiction.deleteMany(done);
-  // });
-
-  // before(done => {
-  //   jurisdiction = Jurisdiction.fake();
-  //   jurisdiction.post((error, created) => {
-  //     jurisdiction = created;
-  //     done(error, created);
-  //   });
-  // });
-
-  // before(done => {
-  //   Alert.deleteMany(done);
-  // });
-
-  before(done => {
-    alerts = Alert.fake(32);
-
-    alerts = _.map(alerts, data => {
-      const alert = data;
-      alert.jurisdictions = [].concat(jurisdiction);
-      return alert;
-    });
-    create(...alerts, done);
-  });
 
   describe('get', () => {
-    // let alerts;
+    let alerts;
 
-    // before(done => {
-    //   const fakes = _.map(Alert.fake(32), alert => {
-    //     return next => {
-    //       alert.jurisdictions = [].concat(jurisdiction);
-    //       alert.post(next);
-    //     };
-    //   });
-    //   async.parallel(fakes, (error, created) => {
-    //     alerts = created;
-    //     done(error, created);
-    //   });
-    // });
+    before(done => {
+      const fakes = _.map(Alert.fake(32), log => {
+        return next => {
+          const alert = log;
+          alert.jurisdictions = [].concat(jurisdiction);
+          alert.post(next);
+        };
+      });
+      async.parallel(fakes, (error, created) => {
+        alerts = created;
+        done(error, created);
+      });
+    });
 
     it('should be able to get without options', done => {
       Alert.get((error, results) => {
@@ -153,5 +130,11 @@ describe('Alert', () => {
     });
   });
 
-  after(done => clear('Alert', 'Jurisdiction', done));
+  after(done => {
+    Alert.deleteMany(done);
+  });
+
+  after(done => {
+    Jurisdiction.deleteMany(done);
+  });
 });
