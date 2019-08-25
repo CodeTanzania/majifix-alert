@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import async from 'async';
-import { sortedUniq, mergeObjects } from '@lykmapipo/common';
+import { sortedUniq, idOf, mergeObjects } from '@lykmapipo/common';
 import { getString } from '@lykmapipo/env';
+import { toE164 } from '@lykmapipo/phone';
 import {
   createSchema,
   model,
@@ -352,54 +353,47 @@ AlertSchema.methods.send = function send(done) {
   });
 
   // query phones
-  return async.parallel(
-    works,
-    function onGetPhones(error, results) {
-      // back off on error
-      if (error) {
-        return done(error);
-      }
+  return async.parallel(works, (error, results) => {
+    // back off on error
+    if (error) {
+      return done(error);
+    }
 
-      // collect phone numbers
-      let phones = [];
+    // collect phone numbers
+    let phones = [];
 
-      // handle results
-      phones = []
-        .concat(results.parties)
-        .concat(results.accounts)
-        .concat(results.reporters);
-      phones = _.uniq(_.compact(phones));
+    // handle results
+    phones = []
+      .concat(results.parties)
+      .concat(results.accounts)
+      .concat(results.reporters);
+    phones = _.uniq(_.compact(phones));
 
-      // update statistics
-      let statistics = {};
-      if (!_.isEmpty(phones)) {
-        statistics = _.merge({}, this.statistics);
-        statistics[TYPE_SMS] = _.merge({}, statistics[TYPE_SMS], {
-          sent: phones.length,
-        });
-      }
+    // update statistics
+    let statistics = {};
+    if (!_.isEmpty(phones)) {
+      statistics = _.merge({}, this.statistics);
+      statistics[TYPE_SMS] = _.merge({}, statistics[TYPE_SMS], {
+        sent: phones.length,
+      });
+    }
 
-      // TODO format phones e164
-      // queue(send) sms
-      _.forEach(
-        phones,
-        function cb(phone) {
-          const payload = {
-            sender: DEFAULT_SMS_SENDER_ID,
-            to: phone,
-            subject: this.subject,
-            body: this.message,
-            bulk: this._id.toString(), // eslint-disable-line no-underscore-dangle
-          };
-          const sms = new SMS(payload);
-          sms.queue();
-        }.bind(this)
-      );
+    // queue(send) sms
+    _.forEach(phones, phone => {
+      const payload = {
+        sender: DEFAULT_SMS_SENDER_ID,
+        to: toE164(phone),
+        subject: this.subject,
+        body: this.message,
+        bulk: idOf(this).toString(),
+      };
+      const sms = new SMS(payload);
+      sms.queue();
+    });
 
-      // update alert
-      return this.put({ statistics }, done);
-    }.bind(this)
-  );
+    // update alert
+    return this.put({ statistics }, done);
+  });
 };
 
 /*

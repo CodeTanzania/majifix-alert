@@ -120,14 +120,15 @@
     "@lykmapipo/express-rest-actions": ">=0.6.7",
     "@lykmapipo/mongoose-common": ">=0.25.10",
     "@lykmapipo/mongoose-exportable": ">=0.3.7",
+    "@lykmapipo/phone": ">=0.5.4",
     "@lykmapipo/postman": ">=0.10.4",
     "async": ">=3.1.0",
     "express": ">=4.17.1",
     "lodash": ">=4.17.15",
     "moment": ">=2.24.0",
     "mongoose-geojson-schemas": ">=0.10.9",
-    "mongoose-locale-schema": ">=0.4.0",
     "mongoose-kue": ">=0.8.5",
+    "mongoose-locale-schema": ">=0.4.0",
     "mongoose-rest-actions": ">=0.28.8"
   },
   "engines": {
