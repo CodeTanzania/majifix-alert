@@ -97,6 +97,8 @@ const AlertSchema = createSchema(
      * @property {boolean} trim - force trimming
      * @property {boolean} required - mark required
      * @property {boolean} index - ensure database index
+     * @property {boolean} taggable - allow field use for tagging
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
@@ -109,6 +111,8 @@ const AlertSchema = createSchema(
       trim: true,
       required: true,
       index: true,
+      taggable: true,
+      exportable: true,
       searchable: true,
       fake: {
         generator: 'hacker',
@@ -126,6 +130,7 @@ const AlertSchema = createSchema(
      * @property {boolean} trim - force trimming
      * @property {boolean} required - mark required
      * @property {boolean} index - ensure database index
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
@@ -138,6 +143,7 @@ const AlertSchema = createSchema(
       trim: true,
       required: true,
       index: true,
+      exportable: true,
       searchable: true,
       fake: {
         generator: 'lorem',
@@ -156,6 +162,8 @@ const AlertSchema = createSchema(
      * @property {string[]} enum - list of allowed methods
      * @property {string[]} default - value to set if non specified
      * @property {boolean} index - ensure database index
+     * @property {boolean} taggable - allow field use for tagging
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
@@ -169,6 +177,8 @@ const AlertSchema = createSchema(
       enum: TYPES,
       default: [TYPE_SMS],
       index: true,
+      taggable: true,
+      exportable: true,
       searchable: true,
       fake: true,
     },
@@ -183,6 +193,8 @@ const AlertSchema = createSchema(
      * @property {string[]} enum - list of allowed receivers
      * @property {string[]} default - value to set if non specified
      * @property {boolean} index - ensure database index
+     * @property {boolean} taggable - allow field use for tagging
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
@@ -196,6 +208,8 @@ const AlertSchema = createSchema(
       required: true,
       enum: RECEIVERS,
       index: true,
+      taggable: true,
+      exportable: true,
       searchable: true,
       fake: true,
     },
