@@ -1,28 +1,28 @@
 /* dependencies */
-const app = require('@lykmapipo/express-common');
+const { get, mount, start } = require('@lykmapipo/express-common');
 const { connect, jsonSchema } = require('@lykmapipo/mongoose-common');
-const { apiVersion, info, router } = require('../lib/index');
-
-/* connect to mongoose */
-app.mount(router);
+const { apiVersion, info, alertRouter } = require('../lib/index');
 
 connect(connectionError => {
   if (connectionError) {
     throw connectionError;
   }
-  app.get('/', (request, response) => {
+  get('/', (request, response) => {
     response.status(200);
     response.json(info);
   });
 
-  app.get(`/${apiVersion}/schemas`, (request, response) => {
+  get(`/${apiVersion}/schemas`, (request, response) => {
     const schema = jsonSchema();
     response.status(200);
     response.json(schema);
   });
 
+  // mount routers
+  mount(alertRouter);
+
   /* fire the app */
-  app.start((error, env) => {
+  start((error, env) => {
     if (error) {
       throw error;
     }
