@@ -1,8 +1,15 @@
 # majifix-alert
 
 [![Build Status](https://travis-ci.org/CodeTanzania/majifix-alert.svg?branch=develop)](https://travis-ci.org/CodeTanzania/majifix-alert)
-[![Dependencies Status](https://david-dm.org/CodeTanzania/majifix-alert/status.svg?style=flat-square)](https://david-dm.org/CodeTanzania/majifix-alert)
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/CodeTanzania/majifix-alert/tree/develop)
+[![Dependencies Status](https://david-dm.org/CodeTanzania/majifix-alert.svg)](https://david-dm.org/CodeTanzania/majifix-alert)
+[![Coverage Status](https://coveralls.io/repos/github/CodeTanzania/majifix-alert/badge.svg?branch=develop)](https://coveralls.io/github/CodeTanzania/majifix-alert?branch=develop)
+[![GitHub License](https://img.shields.io/github/license/CodeTanzania/majifix-alert)](https://github.com/CodeTanzania/majifix-alert/blob/develop/LICENSE)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/CodeTanzania/majifix-alert/tree/develop) 
+
+[![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Code Style](https://badgen.net/badge/code%20style/airbnb/ff5a5f?icon=airbnb)](https://github.com/airbnb/javascript)
+[![npm version](https://img.shields.io/npm/v/@codetanzania/majifix-alert)](https://www.npmjs.com/package/@codetanzania/majifix-alert)
 
 An incident reporting service to notify citizens in case of service disruption such as lack of water, network maintenance etc.
 
@@ -23,16 +30,14 @@ npm install @codetanzania/majifix-alert --save
 ## Usage
 
 ```js
-const mongoose = require('mongoose');
-const { app } = require('@codetanzania/majifix-alert');
+import { connect } from '@lykmapipo/mongoose-common';
+import { Alert, start } from '@codetanzania/majifix-alert';
 
-//connect to mongodb
-mongoose.connect(process.env.MONGODB_URI);
+// connect to mongodb
+connect(process.env.MONGODB_URI, error => { ... });
 
-//fire the app
-app.start(function (error, env) {
-  ...
-});
+// fire http server
+start(error => { ... });
 ```
 
 ## Testing
@@ -65,7 +70,7 @@ It will be nice, if you open an issue first so that we can know what is going on
 
 The MIT License (MIT)
 
-Copyright (c) 2018 CodeTanzania & Contributors
+Copyright (c) CodeTanzania & Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
