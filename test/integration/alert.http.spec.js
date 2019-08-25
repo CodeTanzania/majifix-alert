@@ -1,8 +1,6 @@
-/* dependencies */
 import request from 'supertest';
-import { expect } from 'chai';
 import { app, mount } from '@lykmapipo/express-common';
-import { clear, create } from '@lykmapipo/mongoose-test-helpers';
+import { clear, create, expect } from '@lykmapipo/mongoose-test-helpers';
 import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
 import { Alert, apiVersion, alertRouter } from '../../src/index';
 
