@@ -1,3 +1,5 @@
+import _ from 'lodash';
+import { mergeObjects } from '@lykmapipo/common';
 import { getString } from '@lykmapipo/env';
 import {
   getFor,
@@ -149,7 +151,15 @@ router.delete(
 router.get(
   PATH_JURISDICTION,
   getFor({
-    get: (options, done) => Alert.get(options, done),
+    get: (options, done) => {
+      const copyOfOptions = mergeObjects(options);
+      const jurisdiction = _.get(copyOfOptions, 'filter.jurisdiction');
+      if (!_.isEmpty(jurisdiction)) {
+        copyOfOptions.filter.jurisdictions = { $in: [jurisdiction] };
+        delete copyOfOptions.filter.jurisdiction;
+      }
+      Alert.get(copyOfOptions, done);
+    },
   })
 );
 
