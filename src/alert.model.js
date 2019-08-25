@@ -1,3 +1,46 @@
+import _ from 'lodash';
+import { parallel, waterfall } from 'async';
+import { sortedUniq, idOf, mergeObjects } from '@lykmapipo/common';
+import { getString } from '@lykmapipo/env';
+import { toE164 } from '@lykmapipo/phone';
+import {
+  createSchema,
+  model,
+  ObjectId,
+  Mixed,
+} from '@lykmapipo/mongoose-common';
+import actions from 'mongoose-rest-actions';
+import exportable from '@lykmapipo/mongoose-exportable';
+import { plugin as runInBackground } from 'mongoose-kue';
+import { Message, SMS } from '@lykmapipo/postman';
+import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
+import {
+  POPULATION_MAX_DEPTH,
+  MODEL_NAME_ALERT,
+  COLLECTION_NAME_ALERT,
+  checkDependenciesFor,
+} from '@codetanzania/majifix-common';
+
+/* constants */
+const { TYPE_SMS, TYPES } = Message;
+const OPTION_SELECT = { jurisdiction: 1, subject: 1, receivers: 1, methods: 1 };
+const OPTION_AUTOPOPULATE = {
+  select: OPTION_SELECT,
+  maxDepth: POPULATION_MAX_DEPTH,
+};
+const SCHEMA_OPTIONS = { collection: COLLECTION_NAME_ALERT };
+const DEFAULT_SMS_SENDER_ID = getString('DEFAULT_SMS_SENDER_ID');
+const RECEIVER_REPORTERS = 'Reporters';
+const RECEIVER_CUSTOMERS = 'Customers';
+const RECEIVER_SUBSCRIBERS = 'Subscribers';
+const RECEIVER_EMPLOYEES = 'Employees';
+const RECEIVERS = [
+  RECEIVER_REPORTERS,
+  RECEIVER_CUSTOMERS,
+  RECEIVER_SUBSCRIBERS,
+  RECEIVER_EMPLOYEES,
+];
+
 /**
  * @module Alert
  * @name Alert
@@ -13,54 +56,11 @@
  * @author lally elias <lallyelias87@gmail.com>
  * @author Benson Maruchu <benmaruchu@gmail.com>
  * @license MIT
- * @since 0.1.0
- * @version 1.0.0
+ * @since 1.0.0
+ * @version 0.1.0
  * @public
  */
-
-/* @todo statistics per jurisdiction */
-/* @todo statistics per method */
-
-/* dependencies */
-import _ from 'lodash';
-import async from 'async';
-import mongoose from 'mongoose';
-import { getString } from '@lykmapipo/env';
-import actions from 'mongoose-rest-actions';
-import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
-import { models } from '@codetanzania/majifix-common';
-import { plugin as runInBackground } from 'mongoose-kue';
-
-import { Message, SMS } from '@lykmapipo/postman';
-
-const { Schema } = mongoose;
-const { ObjectId, Mixed } = Schema.Types;
-const { TYPE_SMS, TYPES } = Message;
-const { getModel } = models;
-
-/* constants */
-const DEFAULT_SMS_SENDER_ID = getString('DEFAULT_SMS_SENDER_ID');
-const ALERT_MODEL_NAME = 'Alert';
-const SCHEMA_OPTIONS = { timestamps: true, emitIndexErrors: true };
-const RECEIVER_REPORTERS = 'Reporters';
-const RECEIVER_CUSTOMERS = 'Customers';
-const RECEIVER_SUBSCRIBERS = 'Subscribers';
-const RECEIVER_EMPLOYEES = 'Employees';
-const RECEIVERS = [
-  RECEIVER_REPORTERS,
-  RECEIVER_CUSTOMERS,
-  RECEIVER_SUBSCRIBERS,
-  RECEIVER_EMPLOYEES,
-];
-
-/**
- * @name AlertSchema
- * @type {Schema}
- * @since 0.1.0
- * @version 1.0.0
- * @private
- */
-const AlertSchema = new Schema(
+const AlertSchema = createSchema(
   {
     /**
      * @name jurisdictions
@@ -73,8 +73,8 @@ const AlertSchema = new Schema(
      * @property {object} autopopulate - jurisdiction population options
      * @property {boolean} index - ensure database index
      *
-     * @since 0.1.0
-     * @version 1.0.0
+     * @since 1.0.0
+     * @version 0.1.0
      * @instance
      */
     jurisdictions: {
@@ -82,7 +82,7 @@ const AlertSchema = new Schema(
       ref: Jurisdiction.MODEL_NAME,
       default: undefined,
       required: true,
-      exists: { refresh: true },
+      exists: { refresh: true, select: Jurisdiction.OPTION_SELECT },
       autopopulate: Jurisdiction.OPTION_AUTOPOPULATE,
       index: true,
     },
@@ -97,11 +97,13 @@ const AlertSchema = new Schema(
      * @property {boolean} trim - force trimming
      * @property {boolean} required - mark required
      * @property {boolean} index - ensure database index
+     * @property {boolean} taggable - allow field use for tagging
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
-     * @since 0.1.0
-     * @version 1.0.0
+     * @since 1.0.0
+     * @version 0.1.0
      * @instance
      */
     subject: {
@@ -109,6 +111,8 @@ const AlertSchema = new Schema(
       trim: true,
       required: true,
       index: true,
+      taggable: true,
+      exportable: true,
       searchable: true,
       fake: {
         generator: 'hacker',
@@ -126,11 +130,12 @@ const AlertSchema = new Schema(
      * @property {boolean} trim - force trimming
      * @property {boolean} required - mark required
      * @property {boolean} index - ensure database index
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
-     * @since 0.1.0
-     * @version 1.0.0
+     * @since 1.0.0
+     * @version 0.1.0
      * @instance
      */
     message: {
@@ -138,6 +143,7 @@ const AlertSchema = new Schema(
       trim: true,
       required: true,
       index: true,
+      exportable: true,
       searchable: true,
       fake: {
         generator: 'lorem',
@@ -156,11 +162,13 @@ const AlertSchema = new Schema(
      * @property {string[]} enum - list of allowed methods
      * @property {string[]} default - value to set if non specified
      * @property {boolean} index - ensure database index
+     * @property {boolean} taggable - allow field use for tagging
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
-     * @since 0.1.0
-     * @version 1.0.0
+     * @since 1.0.0
+     * @version 0.1.0
      * @instance
      */
     methods: {
@@ -169,6 +177,8 @@ const AlertSchema = new Schema(
       enum: TYPES,
       default: [TYPE_SMS],
       index: true,
+      taggable: true,
+      exportable: true,
       searchable: true,
       fake: true,
     },
@@ -183,11 +193,13 @@ const AlertSchema = new Schema(
      * @property {string[]} enum - list of allowed receivers
      * @property {string[]} default - value to set if non specified
      * @property {boolean} index - ensure database index
+     * @property {boolean} taggable - allow field use for tagging
+     * @property {boolean} exportable - allow field to be exported
      * @property {boolean} searchable - allow for searching
      * @property {object} fake - fake data generator options
      *
-     * @since 0.1.0
-     * @version 1.0.0
+     * @since 1.0.0
+     * @version 0.1.0
      * @instance
      */
     receivers: {
@@ -196,6 +208,8 @@ const AlertSchema = new Schema(
       required: true,
       enum: RECEIVERS,
       index: true,
+      taggable: true,
+      exportable: true,
       searchable: true,
       fake: true,
     },
@@ -209,8 +223,8 @@ const AlertSchema = new Schema(
      * @property {object} default - value to set if non specified
      * @property {object} fake - fake data generator options
      *
-     * @since 0.1.0
-     * @version 1.0.0
+     * @since 1.0.0
+     * @version 0.1.0
      * @instance
      */
     statistics: {
@@ -219,7 +233,10 @@ const AlertSchema = new Schema(
       fake: true,
     },
   },
-  SCHEMA_OPTIONS
+  SCHEMA_OPTIONS,
+  actions,
+  exportable,
+  runInBackground
 );
 
 /*
@@ -228,19 +245,16 @@ const AlertSchema = new Schema(
  *------------------------------------------------------------------------------
  */
 
+/**
+ * @name validate
+ * @description alert schema pre validation hook
+ * @param {Function} done callback to invoke on success or error
+ * @since 1.0.0
+ * @version 0.1.0
+ * @private
+ */
 AlertSchema.pre('validate', function preValidate(next) {
-  // ensure jurisdictions, receivers & methods
-
-  // ensure statistics
-  if (_.isEmpty(this.statistics) && !_.isEmpty(this.methods)) {
-    const statistics = {};
-    _.forEach(this.methods, function cb(method) {
-      statistics[method] = { sent: 0, delivered: 0, failed: 0 };
-    });
-    this.statistics = statistics;
-  }
-
-  next();
+  return this.preValidate(next);
 });
 
 /*
@@ -250,158 +264,150 @@ AlertSchema.pre('validate', function preValidate(next) {
  */
 
 /**
+ * @name preValidate
+ * @description alert schema pre validation hook logic
+ * @param {Function} done callback to invoke on success or error
+ * @returns {object|Error} valid instance or error
+ * @since 1.0.0
+ * @version 0.1.0
+ * @instance
+ */
+AlertSchema.methods.preValidate = function preValidate(done) {
+  // ensure jurisdictions, receivers & methods
+
+  // ensure statistics
+  if (_.isEmpty(this.statistics) && !_.isEmpty(this.methods)) {
+    const statistics = {};
+    _.forEach(this.methods, method => {
+      statistics[method] = { sent: 0, delivered: 0, failed: 0 };
+    });
+    this.statistics = statistics;
+  }
+
+  // continue
+  return done();
+};
+
+/**
  * @name beforeDelete
  * @function beforeDelete
  * @description pre delete alert logics
- * @param {function} done callback to invoke on success or error
- *
- * @since 0.1.0
- * @version 1.0.0
+ * @param  {Function} done callback to invoke on success or error
+ * @returns {object|Error} dependence free instance or error
+ * @since 1.0.0
+ * @version 0.1.0
  * @instance
  */
 AlertSchema.methods.beforeDelete = function beforeDelete(done) {
   // restrict delete if
 
-  async.parallel(
-    {
-      // 1...there are message reference alert
-      messages: function checkMessageDependency(next) {
-        // check message dependency
-        Message.count(
-          { bulk: this._id.toString() }, // eslint-disable-line no-underscore-dangle
-          function cb(error, count) {
-            let cbError = error;
-            // warning can not delete
-            if (count && count > 0) {
-              const errorMessage = `Fail to Delete. ${count} messages depend on it`;
-              cbError = new Error(errorMessage);
-            }
+  // collect dependencies model name
+  const dependencies = [Message.MODEL_NAME];
 
-            // ensure error status
-            if (cbError) {
-              cbError.status = 400;
-            }
+  // path to check
+  const path = 'bulk';
 
-            // return
-            next(cbError, this);
-          }.bind(this)
-        );
-      }.bind(this),
-    },
-    function cb(error) {
-      done(error, this);
-    }
-  );
+  // do check dependencies
+  return checkDependenciesFor(this, { path, dependencies }, done);
 };
 
 /**
  * @name send
  * @function send
  * @description send alert
- * @param {function} done a callback to invoke on success or failure
- * @return {Alert} default status
- * @since 0.1.0
- * @version 1.0.0
+ * @param {Function} done a callback to invoke on success or failure
+ * @returns {Alert} default status
+ * @since 1.0.0
+ * @version 0.1.0
  * @instance
  */
 AlertSchema.methods.send = function send(done) {
-  // TODO handle email
-
   // prepare jurisdiction
-  const jurisdictions = _.map([].concat(this.jurisdictions), function cb(
-    jurisdiction
-  ) {
-    return _.get(jurisdiction, '_id', jurisdiction);
-  });
+  const jurisdictions = _.map([].concat(this.jurisdictions), jurisdiction =>
+    _.get(jurisdiction, '_id', jurisdiction)
+  );
 
   // prepare receivers
-  const receivers = _.uniq(_.compact([].concat(this.receivers)));
+  const receivers = sortedUniq(this.receivers);
 
-  // get models
-  const Party = getModel('Party');
-  const ServiceRequest = getModel('ServiceRequest');
-  const Account = getModel('Account');
+  // get models ref
+  const Party = model('Party');
+  const ServiceRequest = model('ServiceRequest');
+  const Account = model('Account');
 
   // prepare jurisdiction criteria
   const criteria = { jurisdiction: { $in: jurisdictions } };
 
   // prepare distinct receivers
   const works = {};
-  _.forEach(receivers, function cb(receiver) {
+  _.forEach(receivers, receiver => {
     // query employees phones
     if (Party && receiver === RECEIVER_EMPLOYEES) {
-      const _criteria = { $or: [criteria, { jurisdiction: null }] }; // eslint-disable-line no-underscore-dangle
-      works.parties = function getPartiesPhones(next) {
-        Party.getPhones(_criteria, next);
+      const partyCriteria = { $or: [criteria, { jurisdiction: null }] };
+      works.parties = next => {
+        Party.getPhones(partyCriteria, next);
       };
     }
 
     // query account phones
     if (Account && receiver === RECEIVER_CUSTOMERS) {
-      const _criteria = _.merge({}, criteria); // eslint-disable-line no-underscore-dangle
-      works.accounts = function getAccountsPhones(next) {
-        Account.getPhones(_criteria, next);
+      const accountCriteria = mergeObjects(criteria);
+      works.accounts = next => {
+        Account.getPhones(accountCriteria, next);
       };
     }
 
     // query reporters phones
     if (ServiceRequest && receiver === RECEIVER_REPORTERS) {
-      const _criteria = _.merge({}, criteria); // eslint-disable-line no-underscore-dangle
-      works.reporters = function getReportersPhones(next) {
-        ServiceRequest.getPhones(_criteria, next);
+      const requestCriteria = mergeObjects(criteria);
+      works.reporters = next => {
+        ServiceRequest.getPhones(requestCriteria, next);
       };
     }
   });
 
   // query phones
-  async.parallel(
-    works,
-    function onGetPhones(error, results) {
-      // back off on error
-      if (error) {
-        return done(error);
-      }
+  return parallel(works, (error, results) => {
+    // back off on error
+    if (error) {
+      return done(error);
+    }
 
-      // collect phone numbers
-      let phones = [];
+    // collect phone numbers
+    let phones = [];
 
-      // handle results
-      phones = []
-        .concat(results.parties)
-        .concat(results.accounts)
-        .concat(results.reporters);
-      phones = _.uniq(_.compact(phones));
+    // handle results
+    phones = []
+      .concat(results.parties)
+      .concat(results.accounts)
+      .concat(results.reporters);
+    phones = _.uniq(_.compact(phones));
 
-      // update statistics
-      let statistics = {};
-      if (!_.isEmpty(phones)) {
-        statistics = _.merge({}, this.statistics);
-        statistics[TYPE_SMS] = _.merge({}, statistics[TYPE_SMS], {
-          sent: phones.length,
-        });
-      }
+    // update statistics
+    let statistics = {};
+    if (!_.isEmpty(phones)) {
+      statistics = _.merge({}, this.statistics);
+      statistics[TYPE_SMS] = _.merge({}, statistics[TYPE_SMS], {
+        sent: phones.length,
+      });
+    }
 
-      // TODO format phones e164
-      // queue(send) sms
-      _.forEach(
-        phones,
-        function cb(phone) {
-          const payload = {
-            sender: DEFAULT_SMS_SENDER_ID,
-            to: phone,
-            subject: this.subject,
-            body: this.message,
-            bulk: this._id.toString(), // eslint-disable-line no-underscore-dangle
-          };
-          const sms = new SMS(payload);
-          sms.queue();
-        }.bind(this)
-      );
+    // queue(send) sms
+    _.forEach(phones, phone => {
+      const payload = {
+        sender: DEFAULT_SMS_SENDER_ID,
+        to: toE164(phone),
+        subject: this.subject,
+        body: this.message,
+        bulk: idOf(this).toString(),
+      };
+      const sms = new SMS(payload);
+      sms.queue();
+    });
 
-      // update alert
-      return this.put({ statistics }, done);
-    }.bind(this)
-  );
+    // update alert
+    return this.put({ statistics }, done);
+  });
 };
 
 /*
@@ -410,38 +416,40 @@ AlertSchema.methods.send = function send(done) {
  *------------------------------------------------------------------------------
  */
 
-/* expose static constants */
-AlertSchema.statics.MODEL_NAME = ALERT_MODEL_NAME;
+/* static constants */
+AlertSchema.statics.MODEL_NAME = MODEL_NAME_ALERT;
 AlertSchema.statics.RECEIVERS = RECEIVERS;
+AlertSchema.statics.OPTION_SELECT = OPTION_SELECT;
+AlertSchema.statics.OPTION_AUTOPOPULATE = OPTION_AUTOPOPULATE;
 
-// WIP
-AlertSchema.statics.send = function send(alert, done) {
+/**
+ * @name send
+ * @function send
+ * @description Save and send given alert
+ * @param {object} options valid alert definition
+ * @param {Function} done callback to invoke on success or error
+ * @returns {object|Error} sent alert or error
+ *
+ * @author lally elias <lallyelias87@gmail.com>
+ * @since 1.0.0
+ * @version 0.1.0
+ * @static
+ * @example
+ *
+ * const alert = { ... };
+ * Alert.send(alert, (error, alert) => { ... });
+ *
+ */
+AlertSchema.statics.send = function send(options, done) {
   // refs
-  const Alert = this;
+  const Alert = model(MODEL_NAME_ALERT);
 
-  async.waterfall(
-    [
-      function saveAlert(next) {
-        Alert.post(alert, next);
-      },
+  const saveAlert = next => Alert.post(options, next);
+  const sendAlert = (alert, next) => alert.send(next);
 
-      function sendAlert(created, next) {
-        created.send(next);
-      },
-    ],
-    done
-  );
+  // save, send and return
+  return waterfall([saveAlert, sendAlert], done);
 };
 
-/*
- *------------------------------------------------------------------------------
- * Plugins
- *------------------------------------------------------------------------------
- */
-
-/* use mongoose rest actions */
-AlertSchema.plugin(actions);
-AlertSchema.plugin(runInBackground);
-
 /* export status model */
-export default mongoose.model(ALERT_MODEL_NAME, AlertSchema);
+export default model(MODEL_NAME_ALERT, AlertSchema);
