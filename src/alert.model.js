@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import async from 'async';
+import { parallel, waterfall } from 'async';
 import { sortedUniq, idOf, mergeObjects } from '@lykmapipo/common';
 import { getString } from '@lykmapipo/env';
 import { toE164 } from '@lykmapipo/phone';
@@ -326,11 +326,11 @@ AlertSchema.methods.send = function send(done) {
 
   // prepare distinct receivers
   const works = {};
-  _.forEach(receivers, function cb(receiver) {
+  _.forEach(receivers, receiver => {
     // query employees phones
     if (Party && receiver === RECEIVER_EMPLOYEES) {
       const partyCriteria = { $or: [criteria, { jurisdiction: null }] };
-      works.parties = function getPartiesPhones(next) {
+      works.parties = next => {
         Party.getPhones(partyCriteria, next);
       };
     }
@@ -338,7 +338,7 @@ AlertSchema.methods.send = function send(done) {
     // query account phones
     if (Account && receiver === RECEIVER_CUSTOMERS) {
       const accountCriteria = mergeObjects(criteria);
-      works.accounts = function getAccountsPhones(next) {
+      works.accounts = next => {
         Account.getPhones(accountCriteria, next);
       };
     }
@@ -346,14 +346,14 @@ AlertSchema.methods.send = function send(done) {
     // query reporters phones
     if (ServiceRequest && receiver === RECEIVER_REPORTERS) {
       const requestCriteria = mergeObjects(criteria);
-      works.reporters = function getReportersPhones(next) {
+      works.reporters = next => {
         ServiceRequest.getPhones(requestCriteria, next);
       };
     }
   });
 
   // query phones
-  return async.parallel(works, (error, results) => {
+  return parallel(works, (error, results) => {
     // back off on error
     if (error) {
       return done(error);
@@ -434,7 +434,7 @@ AlertSchema.statics.send = function send(options, done) {
   const sendAlert = (alert, next) => alert.send(next);
 
   // save, send and return
-  return async.waterfall([saveAlert, sendAlert], done);
+  return waterfall([saveAlert, sendAlert], done);
 };
 
 /* export status model */
