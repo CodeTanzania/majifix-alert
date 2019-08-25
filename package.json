@@ -78,7 +78,7 @@
     "coveralls": "^3.0.6",
     "cz-conventional-changelog": "^3.0.2",
     "doxdox": "^3.0.0",
-    "eslint": "^6.2.1",
+    "eslint": "^6.2.2",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-import": "^2.18.2",
@@ -95,7 +95,7 @@
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "rimraf": "^3.0.0",
-    "rollup": "^1.20.1",
+    "rollup": "^1.20.2",
     "shelljs": "^0.8.3",
     "@benmaruchu/faker": "4.3.0",
     "@lykmapipo/express-test-helpers": "^0.8.6",
@@ -111,7 +111,7 @@
     "mongoose": ">=5.6.10"
   },
   "dependencies": {
-    "@codetanzania/majifix-account": ">=1.7.5",
+    "@codetanzania/majifix-account": ">=1.8.0",
     "@codetanzania/majifix-common": ">=0.15.1",
     "@codetanzania/majifix-jurisdiction": ">=1.7.2",
     "@lykmapipo/common": ">=0.25.1",
