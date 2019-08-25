@@ -4,10 +4,10 @@ import { expect } from 'chai';
 import { app, mount } from '@lykmapipo/express-common';
 import { clear, create } from '@lykmapipo/mongoose-test-helpers';
 import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
-import { Alert, apiVersion, router } from '../../src/index';
+import { Alert, apiVersion, alertRouter } from '../../src/index';
 
 describe('Alert', () => {
-  mount(router);
+  mount(alertRouter);
   describe('Rest API', () => {
     const jurisdiction = Jurisdiction.fake();
     let alert;

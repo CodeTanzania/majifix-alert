@@ -10,20 +10,27 @@
  * @license MIT
  * @example
  *
- * const { app } = require('@codetanzania/majifix-alert');
- *
- * ...
- *
- * app.start();
+ * const { Alert, start } = require('@codetanzania/majifix-alert');
+ * start(error => { ... });
  *
  */
-
-/* dependencies */
 import { pkg } from '@lykmapipo/common';
+import { apiVersion as httpApiVersion } from '@lykmapipo/env';
+import { start } from '@lykmapipo/express-common';
 import Alert from './alert.model';
-import router from './http.router';
-/* declarations */
-const info = pkg(
+import alertRouter from './alert.http.router';
+
+/**
+ * @name info
+ * @description package information
+ * @type {object}
+ *
+ * @author lally elias <lallyelias87@gmail.com>
+ * @since 1.0.0
+ * @version 0.1.0
+ */
+export const info = pkg(
+  `${__dirname}/package.json`,
   'name',
   'description',
   'version',
@@ -34,7 +41,45 @@ const info = pkg(
   'sandbox',
   'contributors'
 );
-// extract api version from router version
-const apiVersion = router.version;
 
-export { apiVersion, info, Alert, router };
+/**
+ * @name Alert
+ * @description Alert model
+ *
+ * @author lally elias <lallyelias87@gmail.com>
+ * @since 0.1.0
+ * @version 0.1.0
+ */
+export { Alert };
+
+/**
+ * @name alertRouter
+ * @description alert http router
+ *
+ * @author lally elias <lallyelias87@gmail.com>
+ * @since 0.1.0
+ * @version 0.1.0
+ */
+export { alertRouter };
+
+/**
+ * @name apiVersion
+ * @description http router api version
+ * @type {string}
+ *
+ * @author lally elias <lallyelias87@gmail.com>
+ * @since 0.1.0
+ * @version 0.1.0
+ */
+export const apiVersion = httpApiVersion();
+
+/**
+ * @function start
+ * @name start
+ * @description start http server
+ *
+ * @author lally elias <lallyelias87@gmail.com>
+ * @since 0.1.0
+ * @version 0.1.0
+ */
+export { start };
