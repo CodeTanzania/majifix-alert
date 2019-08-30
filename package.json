@@ -32,7 +32,9 @@
     "notification",
     "sms",
     "email",
-    "push"
+    "push",
+    "citizen",
+    "feedback"
   ],
   "repository": {
     "type": "git",
