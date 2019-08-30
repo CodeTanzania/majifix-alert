@@ -15,11 +15,10 @@ An incident reporting service to notify citizens in case of service disruption s
 
 ## Requirements
 
-- [NodeJS v8.11.1+](https://nodejs.org)
-- [npm v5.6.0+](https://www.npmjs.com/)
-- [Redis 4.0+](https://redis.io/)
-- [MongoDB v3.4.10+](https://www.mongodb.com/)
-- [Mongoose v5.1.2+](https://github.com/Automattic/mongoose)
+- [NodeJS v12+](https://nodejs.org)
+- [Npm v6+](https://www.npmjs.com/)
+- [MongoDB v4+](https://www.mongodb.com/)
+- [Mongoose v5.6+](https://github.com/Automattic/mongoose)
 
 ## Installation
 
