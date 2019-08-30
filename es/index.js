@@ -277,7 +277,7 @@ AlertSchema.methods.preValidate = function preValidate(done) {
   }
 
   // continue
-  return done();
+  return done(null, this);
 };
 
 /**
