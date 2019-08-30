@@ -1,12 +1,8 @@
-/* dependencies */
 const { get, mount, start } = require('@lykmapipo/express-common');
 const { connect, jsonSchema } = require('@lykmapipo/mongoose-common');
-const { apiVersion, info, alertRouter } = require('../lib/index');
+const { alertRouter, info, apiVersion } = require('../lib/index');
 
-connect(connectionError => {
-  if (connectionError) {
-    throw connectionError;
-  }
+const startHttpServer = () => {
   get('/', (request, response) => {
     response.status(200);
     response.json(info);
@@ -21,12 +17,19 @@ connect(connectionError => {
   // mount routers
   mount(alertRouter);
 
-  /* fire the app */
+  // fire http serve
   start((error, env) => {
     if (error) {
       throw error;
     }
-    // eslint-disable-next-line no-console
     console.log(`visit http://0.0.0.0:${env.PORT}/${apiVersion}/alerts`);
   });
+};
+
+// connect and start http server
+connect(error => {
+  if (error) {
+    throw error;
+  }
+  startHttpServer();
 });
