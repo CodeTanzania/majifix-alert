@@ -1,3 +1,19 @@
+#### 1.3.0 (2019-08-30)
+
+##### Chores
+
+* **configs:**  update eslint configs ([934231be](https://github.com/CodeTanzania/majifix-alert/commit/934231be46ccfe7d7b9e03d17e405eb302d4bc18))
+* **examples:**  improve sample app & seed ([0dc3d707](https://github.com/CodeTanzania/majifix-alert/commit/0dc3d7079bba5035ea08f601e9444e627cd1cd52))
+*  improve package keywords ([6987955e](https://github.com/CodeTanzania/majifix-alert/commit/6987955ea33f50927c0b369e84bef3a26f568790))
+* **deps:**
+  *  remove unused deps ([9175f4ff](https://github.com/CodeTanzania/majifix-alert/commit/9175f4ff0d80995af7597744f3d22f9541e4436a))
+  *  force latest version & audit fix ([e714bc3d](https://github.com/CodeTanzania/majifix-alert/commit/e714bc3dab02be66bc7299e03f10b9c6a016a8e0))
+  *  force latest version & audit fix ([6382766b](https://github.com/CodeTanzania/majifix-alert/commit/6382766b3c7f3d9071ebadc889186a2b7edce9ff))
+
+##### Documentation Changes
+
+*  update requirements version ([96fbda4b](https://github.com/CodeTanzania/majifix-alert/commit/96fbda4b4937055dff38360a7d8daa58957c217b))
+
 #### 1.2.0 (2019-08-25)
 
 ##### Chores
