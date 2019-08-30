@@ -85,7 +85,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsdoc": "^15.8.3",
+    "eslint-plugin-jsdoc": "^15.8.4",
     "eslint-plugin-mocha": "^6.1.0",
     "eslint-plugin-prettier": "^3.1.0",
     "generate-changelog": "^1.8.0",
@@ -111,7 +111,7 @@
     "mongoose": ">=5.6.11"
   },
   "dependencies": {
-    "@codetanzania/majifix-account": ">=1.8.0",
+    "@codetanzania/majifix-account": ">=1.9.0",
     "@codetanzania/majifix-common": ">=0.17.0",
     "@codetanzania/majifix-jurisdiction": ">=1.8.0",
     "@lykmapipo/common": ">=0.25.2",
