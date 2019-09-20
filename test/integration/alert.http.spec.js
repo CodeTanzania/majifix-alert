@@ -10,7 +10,7 @@ import {
 import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
 import { Alert, alertRouter } from '../../src/index';
 
-describe.only('Alert Rest API', () => {
+describe('Alert Rest API', () => {
   const jurisdiction = Jurisdiction.fake();
   const alert = Alert.fake();
   alert.jurisdictions = [].concat(jurisdiction);
@@ -42,6 +42,21 @@ describe.only('Alert Rest API', () => {
         expect(created.subject).to.exist.and.be.eql(alert.subject);
         done(error, body);
       });
+  });
+
+  it('should handle HTTP GET /alerts/schema', done => {
+    const { testGetSchema } = testRouter(options, alertRouter);
+    testGetSchema().expect(200, done);
+  });
+
+  it('should handle HTTP GET /alerts/export', done => {
+    const { testGetExport } = testRouter(options, alertRouter);
+    testGetExport()
+      .expect('Content-Type', 'text/csv; charset=utf-8')
+      .expect(({ headers }) => {
+        expect(headers['content-disposition']).to.exist;
+      })
+      .expect(200, done);
   });
 
   it('should handle HTTP GET on /alerts', done => {
