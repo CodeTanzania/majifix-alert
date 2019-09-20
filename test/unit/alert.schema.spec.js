@@ -3,7 +3,7 @@ import { SchemaTypes } from '@lykmapipo/mongoose-common';
 
 import Alert from '../../src/alert.model';
 
-describe.only('Alert Schema', () => {
+describe('Alert Schema', () => {
   it('should have jurisdictions field', () => {
     const jurisdiction = Alert.path('jurisdictions');
 
@@ -55,7 +55,7 @@ describe.only('Alert Schema', () => {
     expect(message.options.fake).to.exist;
   });
 
-  it.only('should have methods field', () => {
+  it('should have methods field', () => {
     const methods = Alert.path('methods');
 
     expect(methods).to.exist;
