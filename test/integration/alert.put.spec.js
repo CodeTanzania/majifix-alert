@@ -86,5 +86,5 @@ describe('Alert instance put', () => {
     });
   });
 
-  after(done => clear('Alert', 'Jurisdiction', done));
+  after(done => clear(Alert, Jurisdiction, done));
 });

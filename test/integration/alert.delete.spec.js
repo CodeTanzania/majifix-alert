@@ -81,5 +81,5 @@ describe('Alert instance delete', () => {
     });
   });
 
-  after(done => clear('Alert', 'Jurisdiction', done));
+  after(done => clear(Alert, Jurisdiction, done));
 });
