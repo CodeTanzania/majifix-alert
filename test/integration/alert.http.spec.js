@@ -1,148 +1,149 @@
-import request from 'supertest';
-import { app, mount } from '@lykmapipo/express-common';
-import { clear, create, expect } from '@lykmapipo/mongoose-test-helpers';
+import {
+  clear as clearHttp,
+  testRouter,
+} from '@lykmapipo/express-test-helpers';
+import {
+  clear as clearDb,
+  expect,
+  create,
+} from '@lykmapipo/mongoose-test-helpers';
 import { Jurisdiction } from '@codetanzania/majifix-jurisdiction';
-import { Alert, apiVersion, alertRouter } from '../../src/index';
+import { Alert, alertRouter } from '../../src/index';
 
-describe('Alert', () => {
-  mount(alertRouter);
-  describe('Rest API', () => {
-    const jurisdiction = Jurisdiction.fake();
-    let alert;
+describe('Alert Rest API', () => {
+  const jurisdiction = Jurisdiction.fake();
+  const alert = Alert.fake();
+  alert.jurisdictions = [].concat(jurisdiction);
 
-    before(done => clear(Alert, Jurisdiction, done));
+  const options = {
+    pathSingle: '/alerts/:id',
+    pathList: '/alerts/',
+    pathSchema: '/alerts/schema/',
+    pathExport: '/alerts/export/',
+    pathJurisdiction: '/jurisdictions/:jurisdiction/alerts',
+  };
 
-    before(done => create(jurisdiction, done));
+  before(done => clearDb(Alert, Jurisdiction, done));
 
-    it('should handle HTTP POST on /alerts', done => {
-      alert = Alert.fake();
-      alert.jurisdictions = [].concat(jurisdiction);
+  before(() => clearHttp());
 
-      request(app)
-        .post(`/${apiVersion}/alerts`)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json')
-        .send(alert)
-        .expect(201)
-        .end((error, response) => {
-          expect(error).to.not.exist;
-          expect(response).to.exist;
+  before(done => create(jurisdiction, done));
 
-          const created = response.body;
-
-          expect(created._id).to.exist;
-          expect(created.subject).to.exist;
-
-          done(error, response);
-        });
-    });
-
-    it('should handle HTTP GET on /alerts', done => {
-      request(app)
-        .get(`/${apiVersion}/alerts`)
-        .set('Accept', 'application/json')
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .end((error, response) => {
-          expect(error).to.not.exist;
-          expect(response).to.exist;
-
-          // assert payload
-          const result = response.body;
-          expect(result.data).to.exist;
-          expect(result.total).to.exist;
-          expect(result.limit).to.exist;
-          expect(result.skip).to.exist;
-          expect(result.page).to.exist;
-          expect(result.pages).to.exist;
-          expect(result.lastModified).to.exist;
-          done(error, response);
-        });
-    });
-
-    it('should handle HTTP GET on /alerts/id:', done => {
-      request(app)
-        .get(`/${apiVersion}/alerts/${alert._id}`)
-        .set('Accept', 'application/json')
-        .expect(200)
-        .end((error, response) => {
-          expect(error).to.not.exist;
-          expect(response).to.exist;
-
-          const found = response.body;
-          expect(found._id).to.exist;
-          expect(found._id).to.be.equal(alert._id.toString());
-          expect(found.subject).to.be.equal(alert.subject);
-
-          done(error, response);
-        });
-    });
-
-    it('should handle HTTP PATCH on /alerts/id:', done => {
-      const patch = alert.fakeOnly('subject');
-
-      request(app)
-        .patch(`/${apiVersion}/alerts/${alert._id}`)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json')
-        .send(patch)
-        .expect(200)
-        .end((error, response) => {
-          expect(error).to.not.exist;
-          expect(response).to.exist;
-
-          const patched = response.body;
-
-          expect(patched._id).to.exist;
-          expect(patched._id).to.be.equal(alert._id.toString());
-          expect(patched.subject).to.be.equal(alert.subject);
-
-          done(error, response);
-        });
-    });
-
-    it('should handle HTTP PUT on /alerts/id:', done => {
-      const put = alert.fakeOnly('subject');
-
-      request(app)
-        .put(`/${apiVersion}/alerts/${alert._id}`)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json')
-        .send(put)
-        .expect(200)
-        .end((error, response) => {
-          expect(error).to.not.exist;
-          expect(response).to.exist;
-
-          const updated = response.body;
-
-          expect(updated._id).to.exist;
-          expect(updated._id).to.be.equal(alert._id.toString());
-          expect(updated.subject).to.be.equal(alert.subject);
-
-          done(error, response);
-        });
-    });
-
-    it('should handle HTTP DELETE on /alerts/:id', done => {
-      request(app)
-        .delete(`/${apiVersion}/alerts/${alert._id}`)
-        .set('Accept', 'application/json')
-        .expect(200)
-        .end((error, response) => {
-          expect(error).to.not.exist;
-          expect(response).to.exist;
-
-          const deleted = response.body;
-
-          expect(deleted._id).to.exist;
-          expect(deleted._id).to.be.equal(alert._id.toString());
-          expect(deleted.subject).to.be.equal(alert.subject);
-
-          done(error, response);
-        });
-    });
-
-    after(done => clear('Alert', 'Jurisdiction', done));
+  it('should handle HTTP POST on /alerts', done => {
+    const { testPost } = testRouter(options, alertRouter);
+    testPost({ ...alert.toObject() })
+      .expect(201)
+      .expect('Content-Type', /json/)
+      .end((error, { body }) => {
+        expect(error).to.not.exist;
+        expect(body).to.exist;
+        const created = new Alert(body);
+        expect(created._id).to.exist.and.be.eql(alert._id);
+        expect(created.subject).to.exist.and.be.eql(alert.subject);
+        done(error, body);
+      });
   });
+
+  it('should handle HTTP GET /alerts/schema', done => {
+    const { testGetSchema } = testRouter(options, alertRouter);
+    testGetSchema().expect(200, done);
+  });
+
+  it('should handle HTTP GET /alerts/export', done => {
+    const { testGetExport } = testRouter(options, alertRouter);
+    testGetExport()
+      .expect('Content-Type', 'text/csv; charset=utf-8')
+      .expect(({ headers }) => {
+        expect(headers['content-disposition']).to.exist;
+      })
+      .expect(200, done);
+  });
+
+  it('should handle HTTP GET on /alerts', done => {
+    const { testGet } = testRouter(options, alertRouter);
+    testGet({ alert })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((error, { body }) => {
+        expect(error).to.not.exist;
+        expect(body).to.exist;
+        expect(body.data).to.exist;
+        expect(body.total).to.exist;
+        expect(body.limit).to.exist;
+        expect(body.skip).to.exist;
+        expect(body.page).to.exist;
+        expect(body.pages).to.exist;
+        expect(body.lastModified).to.exist;
+        done(error, body);
+      });
+  });
+
+  it('should handle HTTP GET on /alerts/id:', done => {
+    const { testGet } = testRouter(options, alertRouter);
+    const params = { id: alert._id.toString() };
+    testGet(params)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((error, { body }) => {
+        expect(error).to.not.exist;
+        expect(body).to.exist;
+        const found = new Alert(body);
+        expect(found._id).to.exist.and.be.eql(alert._id);
+        expect(found.subject).to.exist.and.be.eql(alert.subject);
+        done(error, body);
+      });
+  });
+
+  it('should handle HTTP PATCH on /alerts/id:', done => {
+    const { testPatch } = testRouter(options, alertRouter);
+    const { subject } = alert.fakeOnly('subject');
+    const params = { id: alert._id.toString() };
+    testPatch(params, { subject })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((error, { body }) => {
+        expect(error).to.not.exist;
+        expect(body).to.exist;
+        const patched = new Alert(body);
+        expect(patched._id).to.exist.and.be.eql(alert._id);
+        expect(patched.subject).to.exist.and.be.eql(alert.subject);
+        done(error, body);
+      });
+  });
+
+  it('should handle HTTP PUT on /alerts/id:', done => {
+    const { testPut } = testRouter(options, alertRouter);
+    const { subject } = alert.fakeOnly('subject');
+    const params = { id: alert._id.toString() };
+    testPut(params, { subject })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((error, { body }) => {
+        expect(error).to.not.exist;
+        expect(body).to.exist;
+        const put = new Alert(body);
+        expect(put._id).to.exist.and.be.eql(alert._id);
+        expect(put.subject).to.be.equal(alert.subject);
+        done(error, body);
+      });
+  });
+
+  it('should handle HTTP DELETE on /alerts/:id', done => {
+    const { testDelete } = testRouter(options, alertRouter);
+    const params = { id: alert._id.toString() };
+    testDelete(params)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((error, { body }) => {
+        expect(error).to.not.exist;
+        expect(body).to.exist;
+        const deleted = new Alert(body);
+        expect(deleted._id).to.exist.and.be.eql(alert._id);
+        expect(deleted.subject).to.exist.and.be.eql(alert.subject);
+        done(error, body);
+      });
+  });
+  after(() => clearHttp());
+
+  after(done => clearDb(Alert, Jurisdiction, done));
 });
